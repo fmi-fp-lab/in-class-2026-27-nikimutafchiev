@@ -11,6 +11,8 @@
 
 module ADTs where
 
+import GHC.Internal.Stats (GCDetails (GCDetails))
+
 -- TODO: talk about
 -- - join + write on discord
 -- - created `in-class` repos, `git` workflow
@@ -48,7 +50,11 @@ data RPS = Rock | Paper | Scissors
 -- True
 
 beats :: RPS -> RPS -> Bool
-beats = undefined
+beats l r = case (l, r) of
+  (Rock, Scissors) -> True
+  (Paper, Rock) -> True
+  (Scissors, Paper) -> True
+  (_, _) -> False
 
 -- TASK:
 -- Define the "next" throw you can do in the "usual" ordering of RPS
@@ -57,7 +63,10 @@ beats = undefined
 -- >>> next Rock
 -- Paper
 next :: RPS -> RPS
-next = undefined
+next x = case x of
+  Paper -> Scissors
+  Rock -> Paper
+  Scissors -> Rock
 
 -- TASK:
 -- Define what it means for two RPS values to be equal
@@ -69,7 +78,11 @@ next = undefined
 -- False
 
 eqRPS :: RPS -> RPS -> Bool
-eqRPS = undefined
+eqRPS x y = case (x, y) of
+  (Rock, Rock) -> True
+  (Paper, Paper) -> True
+  (Scissors, Scissors) -> True
+  (_, _) -> False
 
 -- TASK:
 -- Define a shorter version of beats using next and eqRPS
@@ -80,7 +93,7 @@ eqRPS = undefined
 -- True
 
 beats' :: RPS -> RPS -> Bool
-beats' = undefined
+beats' x y = eqRPS x (next y)
 
 ------------
 -- Points --
@@ -95,14 +108,23 @@ isInFirstQuadrant :: Point -> Bool
 isInFirstQuadrant (MkPoint x y) = x > 0 && y > 0
 
 inWhichQuadrantIsIn :: Point -> Integer
-inWhichQuadrantIsIn (MkPoint x y) = if x > 0 && y > 0 then 1 else undefined
+inWhichQuadrantIsIn (MkPoint x y) =
+  if x > 0 && y > 0
+    then 1
+    else
+      if x <= 0 && y > 0
+        then 4
+        else
+          if x <= 0 && y <= 0
+            then 3
+            else 2
 
 inWhichQuadrantIsIn' :: Point -> Integer
 inWhichQuadrantIsIn' (MkPoint x y)
   | x >= 0 && y >= 0 = 1
-  | x  < 0 && y >= 0 = 2
-  | x  < 0 && y  < 0 = 3
-  | x >= 0 && y  < 0 = 4
+  | x < 0 && y >= 0 = 2
+  | x < 0 && y < 0 = 3
+  | x >= 0 && y < 0 = 4
   | otherwise = error "the universe has stopped working"
 
 -- Invert a point by swapping the signs of x and y
@@ -130,8 +152,8 @@ data Nat = Zero | Succ Nat
 integerToNat :: Integer -> Nat
 integerToNat x =
   if x == 0
-  then Zero
-  else Succ (integerToNat (x - 1))
+    then Zero
+    else Succ (integerToNat (x - 1))
 
 -- TASK:
 -- Convert a Nat back to an Integer
@@ -167,7 +189,8 @@ addNat (Succ n1) n2 = Succ (addNat n1 n2)
 -- Succ (Succ (Succ (Succ (Succ (Succ Zero)))))
 
 multNat :: Nat -> Nat -> Nat
-multNat = undefined
+multNat Zero _ = Zero
+multNat (Succ n1) n2 = addNat n2 (multNat n1 n2)
 
 -- TASK:
 -- Compare two Nats, returning an Ordering
@@ -176,7 +199,10 @@ multNat = undefined
 -- GT
 
 compareNat :: Nat -> Nat -> Ordering
-compareNat = undefined
+compareNat Zero Zero = EQ
+compareNat Zero (Succ nat) = LT
+compareNat (Succ nat) Zero = GT
+compareNat (Succ nat1) (Succ nat2) = compareNat nat1 nat2
 
 -- TASK:
 -- Return the maximum of two Nats
@@ -185,7 +211,7 @@ compareNat = undefined
 -- Succ (Succ Zero)
 
 maxNat :: Nat -> Nat -> Nat
-maxNat = undefined
+maxNat nat1 nat2 = if (compareNat nat1 nat2 == GT) then nat1 else nat2
 
 -----------------
 -- Expressions --
@@ -199,6 +225,7 @@ data Expr
   deriving (Show)
 
 infixr 7 `Plus`
+
 infixr 8 `Mult`
 
 -- TASK:
@@ -212,7 +239,9 @@ infixr 8 `Mult`
 -- 12
 
 eval :: Expr -> Integer
-eval = undefined
+eval (Val x) = x
+eval (Plus expr1 expr2) = eval expr1 + eval expr2
+eval (Mult expr1 expr2) = eval expr1 * eval expr2
 
 -- TASK:
 -- Extend the Expr language with If expressions
@@ -236,7 +265,7 @@ suitEquals :: Suit -> Suit -> Bool
 suitEquals = undefined
 
 -- TODO: Record syntax for representing a Card
-data Card = MkCard { rank :: Rank, suit :: Suit }
+data Card = MkCard {rank :: Rank, suit :: Suit}
   deriving (Show)
 
 -- Data type for Contracts in the Belote game
@@ -266,7 +295,9 @@ cardPower = undefined
 -- Imagine you're in a situation where someone has played a card, and you've just played a card
 -- You now need to decide which card would beat the other one
 -- 'CardRelation' expresses the first thing you need to calculate in regards to the two cards
--- *before* you can start checking their 'cardPower's, e.g. is one of them a trump and so on
+
+-- * before* you can start checking their 'cardPower's, e.g. is one of them a trump and so on
+
 --
 -- HINT:
 -- The intended solution has 4 constructors
