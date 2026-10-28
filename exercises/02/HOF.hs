@@ -51,7 +51,7 @@ a *+ b = a * 2 + b
 -- - guards
 
 data EziTura = Ezi | Tura
-    deriving (Eq)
+  deriving (Eq)
 
 neshto :: EziTura -> Integer
 -- neshto ezitura =
@@ -108,6 +108,7 @@ id x = x
 ($) :: (a -> b) -> (a -> b)
 -- f $ a = f a
 ($) = id
+
 infixr 0 $
 
 -- infixr 0 `id`
@@ -139,7 +140,7 @@ infixr 0 $
 
 -- TODO: implement
 data Tuple a b = MkTuple a b
-    deriving (Show)
+  deriving (Show)
 
 sumTuple :: Tuple Int Int -> Int
 sumTuple (MkTuple a b) = a + b
@@ -165,7 +166,7 @@ sndTuple (MkTuple _ b) = b
 -- 42
 
 const :: a -> b -> a
-const = undefined
+const a b = a
 
 -- TASK:
 -- Compose two functions, very useful very often
@@ -196,7 +197,12 @@ compose f g x = f (g x)
 -- 1024
 
 iterateN :: (a -> a) -> a -> Integer -> a
-iterateN = undefined
+iterateN f base e =
+  if e > 0
+    then
+      iterateN f (f base) (e - 1)
+    else
+      base
 
 -- TASK:
 -- Swap the two elements of a tuple
@@ -205,7 +211,7 @@ iterateN = undefined
 -- MkTuple 69 42
 
 swap :: Tuple a b -> Tuple b a
-swap = undefined
+swap (MkTuple a b) = (MkTuple b a)
 
 -- TASK:
 -- Apply a function to only the first component of a tuple
@@ -214,7 +220,7 @@ swap = undefined
 -- MkTuple 42 1337
 
 first :: (a -> b) -> Tuple a c -> Tuple b c
-first = undefined
+first f (MkTuple a c) = (MkTuple (f a) c)
 
 -- TASK:
 -- Convert a function operating on a tuple, to one that takes two arguments.
@@ -225,7 +231,7 @@ first = undefined
 -- 69
 
 curry :: (Tuple a b -> c) -> a -> b -> c
-curry = undefined
+curry f = \a -> \b -> f (MkTuple a b)
 
 -- TASK:
 -- Convert a two argument function, to one that takes a Tuple.
@@ -234,7 +240,7 @@ curry = undefined
 -- 69
 
 uncurry :: (a -> b -> c) -> Tuple a b -> c
-uncurry = undefined
+uncurry f (MkTuple a b) = f a b
 
 -- TASK:
 -- > p `on` f
@@ -255,7 +261,7 @@ on = undefined
 -- 1372
 
 until :: (a -> Bool) -> (a -> a) -> a -> a
-until = undefined
+until pr f a = if pr a then a else until (pr) (f) (f a)
 
 -- TASK:
 -- Apply two different functions to the two different arguments of a tuple
@@ -265,9 +271,9 @@ until = undefined
 -- mapTuple = undefined
 
 data Nat
-    = Zero
-    | Succ Nat
-    deriving (Show)
+  = Zero
+  | Succ Nat
+  deriving (Show)
 
 -- Look at addNat and multNat from last time.
 --
