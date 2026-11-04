@@ -113,12 +113,17 @@ natToInteger = foldNat 0 (+ 1)
 
 -- TASK:
 -- Implement exponentiation(n ^ m) using foldNat.
+integerToNat :: Integer -> Nat
+integerToNat x =
+  if x == 0
+    then Zero
+    else Succ (integerToNat (x - 1))
 
 -- >>> natToInteger $ expNat (integerToNat 2) (integerToNat 10)
 -- 1024
 
 expNat :: Nat -> Nat -> Nat
-expNat = undefined
+expNat n1 = foldNat (Succ Zero) (multNat n1)
 
 ---------------
 -- EXERCISES --
@@ -133,7 +138,7 @@ expNat = undefined
 -- True
 
 and :: [Bool] -> Bool
-and = undefined
+and = foldr True (&&)
 
 -- TASK:
 -- Implement or using foldr
@@ -144,7 +149,7 @@ and = undefined
 -- True
 
 or :: [Bool] -> Bool
-or = undefined
+or = foldr False (||)
 
 -- TASK:
 -- Implement length using foldr
@@ -155,7 +160,7 @@ or = undefined
 -- 0
 
 length :: [a] -> Integer
-length = undefined
+length = foldr 0 (const (1 +))
 
 -- TASK:
 -- Implement (++) using foldr
@@ -177,7 +182,7 @@ length = undefined
 -- []
 
 concat :: [[a]] -> [a]
-concat = undefined
+concat = foldr [] append
 
 -- TASK:
 -- Implement reverse using foldr (it's fine to do this in `O(n^2)`)
@@ -188,7 +193,7 @@ concat = undefined
 -- []
 
 reverse :: [a] -> [a]
-reverse = undefined
+reverse = foldr [] undefined
 
 -- TASK:
 -- Implement map using foldr
@@ -197,11 +202,11 @@ reverse = undefined
 -- [2,3,4]
 -- >>> map (\x -> x * x) [1,2,3] -- same as squareList
 -- [1,4,9]
--- >>> map (\x -> (3,x)) [1,2,3] -- same as megaPair 3
--- [(3,1),(3,2),(3,3)]
+-- >>> map (\x -> (x,22)) [1,2,3] -- same as megaPair 3
+-- [(1,22),(2,22),(3,22)]
 
 map :: (a -> b) -> [a] -> [b]
-map = undefined
+map f = foldr [] (\x -> (f x :))
 
 -- TASK:
 -- Implement filter using foldr
@@ -216,7 +221,7 @@ map = undefined
 -- [2,3,5,7,11,13,17,19]
 
 filter :: (a -> Bool) -> [a] -> [a]
-filter = undefined
+filter f = foldr [] (\x acc -> if f x then x : acc else acc)
 
 -- TASK:
 -- Implement null using foldr
@@ -227,7 +232,7 @@ filter = undefined
 -- False
 
 null :: [a] -> Bool
-null = undefined
+null = foldr True (\_ _ -> False)
 
 -- TASK:
 -- Implement headMaybe using foldr
@@ -238,7 +243,7 @@ null = undefined
 -- Just 1
 
 headMaybe :: [a] -> Maybe a
-headMaybe = undefined
+headMaybe = foldr Nothing (\x _ -> Just x)
 
 -- TASK:
 -- Implement a function that splits a list into two based on a predicate p
@@ -250,7 +255,7 @@ headMaybe = undefined
 -- ([2,4,6,8,10],[1,3,5,7,9])
 
 partition :: (a -> Bool) -> [a] -> ([a], [a])
-partition = undefined
+partition predicate l = (filter predicate l, filter (not . predicate) l)
 
 -- TASK:
 -- Implement partition using foldr
@@ -261,7 +266,7 @@ partition = undefined
 -- ([2,4,6,8,10],[1,3,5,7,9])
 
 partitionfoldr :: (a -> Bool) -> [a] -> ([a], [a])
-partitionfoldr = undefined
+partitionfoldr predicate = foldr ([], []) (\x (l1, l2) -> if predicate x then (x : l1, l2) else (l1, x : l2))
 
 -- TASK:
 -- Implement validateList using foldr.
