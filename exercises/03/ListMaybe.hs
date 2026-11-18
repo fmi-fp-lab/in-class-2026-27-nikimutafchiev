@@ -99,7 +99,7 @@ headMaybe (x : _) = Just x
 -- []
 
 listFromRange :: Integer -> Integer -> [Integer]
-listFromRange = undefined
+listFromRange a b = [x | x <- [a .. b]]
 
 -- TASK:
 -- Multiply all the elements of a list
@@ -110,12 +110,15 @@ listFromRange = undefined
 -- 1
 
 product :: [Integer] -> Integer
-product = undefined
+product [] = 0
+product (x : rest) = if rest == [] then x else x * product rest
 
 -- TASK:
 -- Implement factorial with prod and listFromRange
 fact :: Integer -> Integer
-fact = undefined
+fact 0 = 1
+fact 1 = 1
+fact n = product (listFromRange 2 n)
 
 -- TASK:
 -- Return a list of the numbers that divide the given number.
@@ -128,7 +131,7 @@ fact = undefined
 -- [1,2,3,4,6,8,12,24]
 
 divisors :: Integer -> [Integer]
-divisors = undefined
+divisors n = [x | x <- [1 .. n], (mod n x == 0)]
 
 -- TASK:
 -- Implement prime number checking using listFromRange and divisors
@@ -139,7 +142,9 @@ divisors = undefined
 -- False
 
 isPrime :: Integer -> Bool
-isPrime = undefined
+isPrime n
+  | n <= 1 = False
+  | otherwise = undefined
 
 -- TASK:
 -- Get the last element in a list.
@@ -150,7 +155,9 @@ isPrime = undefined
 -- Just 3
 
 lastMaybe :: [a] -> Maybe a
-lastMaybe = undefined
+lastMaybe [] = Nothing
+lastMaybe (x : []) = Just x
+lastMaybe (_ : rest) = lastMaybe rest
 
 -- TASK:
 -- Calculate the length of a list.
@@ -161,7 +168,8 @@ lastMaybe = undefined
 -- 0
 
 length :: [a] -> Integer
-length = undefined
+length [] = 0
+length (_s : rest) = 1 + length rest
 
 -- TASK:
 -- Return the nth element from a list (we count from 0).
@@ -173,7 +181,9 @@ length = undefined
 -- Nothing
 
 ix :: Integer -> [a] -> Maybe a
-ix = undefined
+ix 0 (x : _) = Just x
+ix n (_ : rest) = if n > length rest then Nothing else (ix (n - 1) rest)
+ix _ [] = Nothing
 
 -- TASK:
 -- "Drop" the first n elements of a list.
@@ -185,7 +195,9 @@ ix = undefined
 -- []
 
 drop :: Integer -> [a] -> [a]
-drop = undefined
+drop 0 l = l
+drop _ [] = []
+drop n (_ : rest) = drop (n - 1) rest
 
 -- TASK:
 -- "Take" the first n elements of a list.
@@ -197,7 +209,9 @@ drop = undefined
 -- [1,2,3,4,5,6,7,8,9,10]
 
 take :: Integer -> [a] -> [a]
-take = undefined
+take 0 _ = []
+take _ [] = []
+take n (x : rest) = x : take (n - 1) rest
 
 -- TASK:
 -- Append one list to another. append [1,2,3] [4,5,6] == [1,2,3,4,5,6]
@@ -213,7 +227,9 @@ take = undefined
 -- [4,5,6]
 
 append :: [a] -> [a] -> [a]
-append = undefined
+append [] l2 = l2
+append l1 [] = l1
+append (x : rest) l2 = x : append rest l2
 
 -- TASK:
 -- Concatenate all the lists together.
@@ -226,7 +242,8 @@ append = undefined
 -- []
 
 concat :: [[a]] -> [a]
-concat = undefined
+concat [] = []
+concat (x : rest) = append x (concat rest)
 
 -- TASK:
 -- Reverse a list. It's fine to do this however you like.
@@ -237,7 +254,8 @@ concat = undefined
 -- []
 
 reverse :: [a] -> [a]
-reverse = undefined
+reverse [] = []
+reverse l = undefined
 
 -- TASK:
 -- Square all the numbers in a list
@@ -246,7 +264,7 @@ reverse = undefined
 -- [1,4,9,25]
 
 squareList :: [Integer] -> [Integer]
-squareList = undefined
+squareList l = [x * x | x <- l]
 
 -- TASK:
 -- Pair up the given element with each of the elements a list.
@@ -255,7 +273,7 @@ squareList = undefined
 -- [(42,69),(42,7),(42,42)]
 
 megaPair :: a -> [b] -> [(a, b)]
-megaPair = undefined
+megaPair n l = [(n, x) | x <- l]
 
 -- TASK:
 -- Both of those functions above have the same structure - apply a function to each element of a list.
@@ -269,7 +287,7 @@ megaPair = undefined
 -- [(3,1),(3,2),(3,3)]
 
 map :: (a -> b) -> [a] -> [b]
-map = undefined
+map f l = [f x | x <- l]
 
 -- TASK:
 -- Check if all the elements in a list are True.
@@ -282,7 +300,9 @@ map = undefined
 -- True
 
 and :: [Bool] -> Bool
-and = undefined
+and [] = True
+and [False] = False
+and (x : rest) = if x == False then False else and rest
 
 -- TASK:
 -- Check if all the elements of a list satisfy a predicate
@@ -294,7 +314,9 @@ and = undefined
 -- False
 
 all :: (a -> Bool) -> [a] -> Bool
-all = undefined
+all _ [] = True
+all f [x] = f x
+all f (x : rest) = f x && (all f rest)
 
 -- TASK:
 -- Implement the cartesian product of two lists.
@@ -343,17 +365,17 @@ filter :: (a -> Bool) -> [a] -> [a]
 filter = undefined
 
 data Digit
-    = Zero
-    | One
-    | Two
-    | Three
-    | Four
-    | Five
-    | Six
-    | Seven
-    | Eight
-    | Nine
-    deriving (Show, Enum)
+  = Zero
+  | One
+  | Two
+  | Three
+  | Four
+  | Five
+  | Six
+  | Seven
+  | Eight
+  | Nine
+  deriving (Show, Enum)
 
 -- TASK:
 -- Parse a character into a digit.

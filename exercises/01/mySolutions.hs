@@ -11,6 +11,8 @@
 
 module ADTs where
 
+import GHC.Internal.Stats (GCDetails (GCDetails))
+
 -- TODO: talk about
 -- - join + write on discord
 -- - solutions (linked in discord)
@@ -43,7 +45,11 @@ data RPS = Rock | Paper | Scissors
 -- True
 
 beats :: RPS -> RPS -> Bool
-beats = undefined
+beats l r = case (l, r) of
+  (Rock, Scissors) -> True
+  (Paper, Rock) -> True
+  (Scissors, Paper) -> True
+  (_, _) -> False
 
 -- TASK:
 -- Define the next throw in the usual ordering of RPS.
@@ -52,7 +58,10 @@ beats = undefined
 -- Paper
 
 next :: RPS -> RPS
-next = undefined
+next x = case x of
+  Paper -> Scissors
+  Rock -> Paper
+  Scissors -> Rock
 
 -- TASK:
 -- Define equality for RPS values.
@@ -64,7 +73,11 @@ next = undefined
 -- False
 
 eqRPS :: RPS -> RPS -> Bool
-eqRPS = undefined
+eqRPS x y = case (x, y) of
+  (Rock, Rock) -> True
+  (Paper, Paper) -> True
+  (Scissors, Scissors) -> True
+  (_, _) -> False
 
 -- TASK:
 -- Define a shorter version of `beats` using `next` and `eqRPS`.
@@ -75,8 +88,47 @@ eqRPS = undefined
 -- True
 
 beats' :: RPS -> RPS -> Bool
-beats' = undefined
+beats' x y = eqRPS x (next y)
 
+<<<<<<< HEAD:exercises/01/Before.hs
+=======
+------------
+-- Points --
+------------
+
+-- Record syntax for a point in 2D discrete space
+data Point = MkPoint Integer Integer
+  deriving (Show)
+
+-- Check if a point is in the first quadrant (both x and y are positive)
+isInFirstQuadrant :: Point -> Bool
+isInFirstQuadrant (MkPoint x y) = x > 0 && y > 0
+
+inWhichQuadrantIsIn :: Point -> Integer
+inWhichQuadrantIsIn (MkPoint x y) =
+  if x > 0 && y > 0
+    then 1
+    else
+      if x <= 0 && y > 0
+        then 4
+        else
+          if x <= 0 && y <= 0
+            then 3
+            else 2
+
+inWhichQuadrantIsIn' :: Point -> Integer
+inWhichQuadrantIsIn' (MkPoint x y)
+  | x >= 0 && y >= 0 = 1
+  | x < 0 && y >= 0 = 2
+  | x < 0 && y < 0 = 3
+  | x >= 0 && y < 0 = 4
+  | otherwise = error "the universe has stopped working"
+
+-- Invert a point by swapping the signs of x and y
+invert :: Point -> Point
+invert (MkPoint x y) = MkPoint (-x) (-y)
+
+>>>>>>> master:exercises/01/mySolutions.hs
 ----------------------------------------
 -- Natural Numbers (Peano Arithmetic) --
 ----------------------------------------
@@ -91,7 +143,10 @@ data Nat = Zero | Succ Nat
 -- Succ (Succ (Succ Zero))
 
 integerToNat :: Integer -> Nat
-integerToNat = undefined
+integerToNat x =
+  if x == 0
+    then Zero
+    else Succ (integerToNat (x - 1))
 
 -- TASK:
 -- Convert a Nat back to an Integer.
@@ -118,7 +173,8 @@ addNat = undefined
 -- Succ (Succ (Succ (Succ (Succ (Succ Zero)))))
 
 multNat :: Nat -> Nat -> Nat
-multNat = undefined
+multNat Zero _ = Zero
+multNat (Succ n1) n2 = addNat n2 (multNat n1 n2)
 
 -- TASK:
 -- Compare two Nats, returning an Ordering.
@@ -127,7 +183,10 @@ multNat = undefined
 -- GT
 
 compareNat :: Nat -> Nat -> Ordering
-compareNat = undefined
+compareNat Zero Zero = EQ
+compareNat Zero (Succ nat) = LT
+compareNat (Succ nat) Zero = GT
+compareNat (Succ nat1) (Succ nat2) = compareNat nat1 nat2
 
 -- TASK:
 -- Return the maximum of two Nats.
@@ -136,7 +195,7 @@ compareNat = undefined
 -- Succ (Succ Zero)
 
 maxNat :: Nat -> Nat -> Nat
-maxNat = undefined
+maxNat nat1 nat2 = if (compareNat nat1 nat2 == GT) then nat1 else nat2
 
 -----------------
 -- Expressions --
@@ -149,6 +208,7 @@ data Expr
   deriving (Show)
 
 infixr 7 `Plus`
+
 infixr 8 `Mult`
 
 -- TASK:
@@ -162,7 +222,9 @@ infixr 8 `Mult`
 -- 12
 
 eval :: Expr -> Integer
-eval = undefined
+eval (Val x) = x
+eval (Plus expr1 expr2) = eval expr1 + eval expr2
+eval (Mult expr1 expr2) = eval expr1 * eval expr2
 
 -- TASK:
 -- Extend the Expr language with If expressions.
@@ -184,7 +246,11 @@ data Suit = B
 suitEquals :: Suit -> Suit -> Bool
 suitEquals = undefined
 
+<<<<<<< HEAD:exercises/01/Before.hs
 -- TODO: define the Card record syntax.
+=======
+-- TODO: Record syntax for representing a Card
+>>>>>>> master:exercises/01/mySolutions.hs
 data Card = MkCard {rank :: Rank, suit :: Suit}
   deriving (Show)
 
@@ -205,8 +271,28 @@ cardPower :: Contract -> Card -> Integer
 cardPower = undefined
 
 -- TASK:
+<<<<<<< HEAD:exercises/01/Before.hs
 -- Define the four ways two cards can relate under a contract.
 
+=======
+-- A data type to describe the different ways two cards can relate, given a contract
+-- See the 'sameSuit' and 'relateCards' functions below to get a better sense of how
+-- you'll be producing this data type, and hence what constructors it should have
+--
+-- This data type exists mainly because it's useful as a tool to implement the 'fight' function
+-- As such, it might be the case that your version of CardRelation is different from what I intended
+--
+-- The way to think about this is as follows:
+-- Imagine you're in a situation where someone has played a card, and you've just played a card
+-- You now need to decide which card would beat the other one
+-- 'CardRelation' expresses the first thing you need to calculate in regards to the two cards
+
+-- * before* you can start checking their 'cardPower's, e.g. is one of them a trump and so on
+
+--
+-- HINT:
+-- The intended solution has 4 constructors
+>>>>>>> master:exercises/01/mySolutions.hs
 data CardRelation
   deriving (Show)
 

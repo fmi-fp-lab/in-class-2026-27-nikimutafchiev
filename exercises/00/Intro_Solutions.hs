@@ -1,7 +1,6 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 -- {{{ Pragmas
-
 -- NOTE: read up more here - https://wiki.haskell.org/Language_Pragmas
-
 -- cover all cases!
 {-# OPTIONS_GHC -fwarn-incomplete-patterns #-}
 -- warn about incomplete patterns v2
@@ -13,7 +12,6 @@
 -- use all your pattern matches!
 {-# OPTIONS_GHC -fwarn-unused-matches #-}
 
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 -- disable some hints that spoil the easy tasks
 {-# HLINT ignore "Use even" #-}
 
@@ -140,6 +138,7 @@ f :: Integer -> (Integer -> Integer)
 -- f x y = x + y
 -- f x = \y -> x + y
 f = \x -> \y -> x + y
+
 -- >>> ((f 1) 2)
 -- f = \x -> x + 5
 
@@ -199,7 +198,7 @@ fib x = if x < 2 then x else fib (x - 1) + fib (x - 2)
 -- 42
 
 myPlus :: Integer -> Integer -> Integer
-myPlus = undefined
+myPlus x y = if x == 0 then y else succ (myPlus (pred x) y)
 
 -- same as above, implement multiplication on natural numbers recursively, using addition instead of succ
 -- EXAMPLES
@@ -212,7 +211,7 @@ myPlus = undefined
 -- >>> myMult 1 42
 -- 42
 myMult :: Integer -> Integer -> Integer
-myMult = undefined
+myMult x y = if y == 0 then 0 else myPlus x (myMult x (y - 1))
 
 -- Implement "fast exponentiation".
 -- This uses the following property:
@@ -228,7 +227,13 @@ myMult = undefined
 -- >>> fastPow 2 6
 -- 64
 fastPow :: Integer -> Integer -> Integer
-fastPow = undefined
+fastPow x n =
+  if n == 0
+    then 1
+    else
+      if isEven n
+        then fastPow (x * x) (div n 2)
+        else x * fastPow x (n - 1)
 
 -- Define two mutually recursive functions which check whether a number is even or odd.
 -- Assume that the input is non-negative.
@@ -247,10 +252,10 @@ fastPow = undefined
 -- True
 
 isEven :: Integer -> Bool
-isEven = undefined
+isEven x = if x == 0 then True else if x == 1 then False else isOdd (x - 1)
 
 isOdd :: Integer -> Bool
-isOdd = undefined
+isOdd x = if x == 0 then False else if x == 1 then True else isEven (x - 1)
 
 -- Define a function to check whether a given Integer is a prime number.
 -- Assume that the input is non-negative.
@@ -293,13 +298,25 @@ isOdd = undefined
 --
 -- EXAMPLES
 -- >>> isPrime 5
--- True
+-- Prelude.undefined
 -- >>> isPrime 6
--- False
+-- Prelude.undefined
 -- >>> isPrime 13
--- True
+-- Prelude.undefined
 
 isPrime :: Integer -> Bool
-isPrime = undefined
+isPrime 1 = False
+isPrime x =
+  not (areDivisorsInRange 2 (x - 1))
+  where
+    divides a b = (rem b a == 0)
+    areDivisorsInRange a b =
+      if a > b
+        then False
+        else
+          if divides a x
+            then True
+            else
+              areDivisorsInRange (succ a) b
 
 -- vim: foldmethod=marker:
