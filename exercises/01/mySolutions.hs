@@ -15,17 +15,15 @@ import GHC.Internal.Stats (GCDetails (GCDetails))
 
 -- TODO: talk about
 -- - join + write on discord
--- - created `in-class` repos, `git` workflow
 -- - solutions (linked in discord)
--- - first homework (HW00) this week
+-- - first homework this week
 -- - `TODO` -> stuff for me
 --   `TASK` -> stuff for you
 -- TODO: show
 -- - pragmas on the top of files
 -- - `undefined` vs `error` vs `_`
--- - `let` and `where`
--- - "multi-argument" functions
--- - operators (including fixity, compare with C++) and sections
+-- - "taking arguments" (via `C`-style signatures)
+-- - operators and sections
 -- - `case` and pattern matching
 -- - guards
 -- - mention `deriving (Show)`
@@ -34,15 +32,12 @@ import GHC.Internal.Stats (GCDetails (GCDetails))
 -- RPS (Rock, Paper, Scissors) and Booleans --
 ----------------------------------------------
 
--- RPS - enum example
--- This will be our type representing Rock, Paper, and Scissors
--- TODO: show `case` here
 data RPS = Rock | Paper | Scissors
   deriving (Show)
 
--- `beats` function: Implement the logic for which RPS beats another
--- TODO:
--- Use pattern matching and ignore some cases to demonstrate the use of _
+-- TASK:
+-- Define which RPS value beats another.
+-- Use pattern matching and `_` where appropriate.
 
 -- >>> beats Rock Paper
 -- False
@@ -57,11 +52,11 @@ beats l r = case (l, r) of
   (_, _) -> False
 
 -- TASK:
--- Define the "next" throw you can do in the "usual" ordering of RPS
--- i.e. `next x` should be the throw that beats x
+-- Define the next throw in the usual ordering of RPS.
 
 -- >>> next Rock
 -- Paper
+
 next :: RPS -> RPS
 next x = case x of
   Paper -> Scissors
@@ -69,8 +64,8 @@ next x = case x of
   Scissors -> Rock
 
 -- TASK:
--- Define what it means for two RPS values to be equal
--- Use pattern matching and use _ matches!
+-- Define equality for RPS values.
+-- Use pattern matching and `_` where appropriate.
 
 -- >>> eqRPS Rock Rock
 -- True
@@ -85,7 +80,7 @@ eqRPS x y = case (x, y) of
   (_, _) -> False
 
 -- TASK:
--- Define a shorter version of beats using next and eqRPS
+-- Define a shorter version of `beats` using `next` and `eqRPS`.
 
 -- >>> beats' Rock Paper
 -- True
@@ -95,6 +90,8 @@ eqRPS x y = case (x, y) of
 beats' :: RPS -> RPS -> Bool
 beats' x y = eqRPS x (next y)
 
+<<<<<<< HEAD:exercises/01/Before.hs
+=======
 ------------
 -- Points --
 ------------
@@ -131,20 +128,16 @@ inWhichQuadrantIsIn' (MkPoint x y)
 invert :: Point -> Point
 invert (MkPoint x y) = MkPoint (-x) (-y)
 
+>>>>>>> master:exercises/01/mySolutions.hs
 ----------------------------------------
 -- Natural Numbers (Peano Arithmetic) --
 ----------------------------------------
 
--- Encoding for natural numbers using Peano arithmetic
 data Nat = Zero | Succ Nat
   deriving (Show)
 
--- 2
--- Succ (Succ Zero)
--- 1+ 1+ 0
-
 -- TASK:
--- Convert an Integer to Nat
+-- Convert an Integer to Nat.
 
 -- >>> integerToNat 3
 -- Succ (Succ (Succ Zero))
@@ -156,34 +149,25 @@ integerToNat x =
     else Succ (integerToNat (x - 1))
 
 -- TASK:
--- Convert a Nat back to an Integer
+-- Convert a Nat back to an Integer.
 
 -- >>> natToInteger (Succ (Succ Zero))
 -- 2
 
 natToInteger :: Nat -> Integer
-natToInteger Zero = 0
-natToInteger (Succ x) = 1 + natToInteger x
+natToInteger = undefined
 
 -- TASK:
--- Add two Nats
+-- Add two Nats.
 
 -- >>> addNat (Succ Zero) (Succ Zero)
 -- Succ (Succ Zero)
 
 addNat :: Nat -> Nat -> Nat
-addNat Zero n2 = n2
-addNat (Succ n1) n2 = Succ (addNat n1 n2)
-
--- addNat (Succ (Succ Zero))    (Succ Zero)
---              ^^^^^^^^^^^ n1  ^^^^^^^^^^^ n2
--- Succ (addNat (Succ Zero) (Succ Zero))
---                    ^^^ n1 ^^^^^^^^^ n2
--- Succ (Succ (addNat Zero (Succ Zero)))
--- Succ (Succ (Succ Zero))
+addNat = undefined
 
 -- TASK:
--- Multiply two Nats
+-- Multiply two Nats.
 
 -- >>> multNat (Succ (Succ Zero)) (Succ (Succ (Succ Zero)))
 -- Succ (Succ (Succ (Succ (Succ (Succ Zero)))))
@@ -193,7 +177,7 @@ multNat Zero _ = Zero
 multNat (Succ n1) n2 = addNat n2 (multNat n1 n2)
 
 -- TASK:
--- Compare two Nats, returning an Ordering
+-- Compare two Nats, returning an Ordering.
 
 -- >>> compareNat (Succ Zero) Zero
 -- GT
@@ -205,7 +189,7 @@ compareNat (Succ nat) Zero = GT
 compareNat (Succ nat1) (Succ nat2) = compareNat nat1 nat2
 
 -- TASK:
--- Return the maximum of two Nats
+-- Return the maximum of two Nats.
 
 -- >>> maxNat (Succ Zero) (Succ (Succ Zero))
 -- Succ (Succ Zero)
@@ -217,7 +201,6 @@ maxNat nat1 nat2 = if (compareNat nat1 nat2 == GT) then nat1 else nat2
 -- Expressions --
 -----------------
 
--- A simple expression language for a calculator
 data Expr
   = Val Integer
   | Plus Expr Expr
@@ -229,7 +212,7 @@ infixr 7 `Plus`
 infixr 8 `Mult`
 
 -- TASK:
--- Evaluate an expression in the Expr language
+-- Evaluate an expression in the Expr language.
 
 -- >>> eval (Val 3)
 -- 3
@@ -244,46 +227,54 @@ eval (Plus expr1 expr2) = eval expr1 + eval expr2
 eval (Mult expr1 expr2) = eval expr1 * eval expr2
 
 -- TASK:
--- Extend the Expr language with If expressions
--- Interpret 0 as "false" and any non-zero value as "true"
+-- Extend the Expr language with If expressions.
+-- Interpret 0 as false and any non-zero value as true.
 
 ------------
 -- Belote --
 ------------
 
--- Data type for Ranks in a card game
 data Rank = A
   deriving (Show)
 
--- Data type for Suits in a card game
 data Suit = B
   deriving (Show)
 
 -- TASK:
--- Check if two suits are equal
+-- Check if two suits are equal.
+
 suitEquals :: Suit -> Suit -> Bool
 suitEquals = undefined
 
+<<<<<<< HEAD:exercises/01/Before.hs
+-- TODO: define the Card record syntax.
+=======
 -- TODO: Record syntax for representing a Card
+>>>>>>> master:exercises/01/mySolutions.hs
 data Card = MkCard {rank :: Rank, suit :: Suit}
   deriving (Show)
 
--- Data type for Contracts in the Belote game
 data Contract
   deriving (Show)
 
 -- TASK:
--- Check if a card is of a trump suit based on a given contract
+-- Check if a card has a trump suit for a given contract.
+
 isTrump :: Contract -> Card -> Bool
 isTrump = undefined
 
 -- TASK:
--- Assign a numerical power value to a card based on the contract
--- Ensure that higher power values represent stronger cards
+-- Assign a numerical power value to a card for a contract.
+-- Higher values represent stronger cards.
+
 cardPower :: Contract -> Card -> Integer
 cardPower = undefined
 
 -- TASK:
+<<<<<<< HEAD:exercises/01/Before.hs
+-- Define the four ways two cards can relate under a contract.
+
+=======
 -- A data type to describe the different ways two cards can relate, given a contract
 -- See the 'sameSuit' and 'relateCards' functions below to get a better sense of how
 -- you'll be producing this data type, and hence what constructors it should have
@@ -301,31 +292,37 @@ cardPower = undefined
 --
 -- HINT:
 -- The intended solution has 4 constructors
+>>>>>>> master:exercises/01/mySolutions.hs
 data CardRelation
   deriving (Show)
 
 -- TASK:
--- Given a contract, calculate how two cards relate
+-- Calculate how two cards relate under a contract.
+
 relateCards :: Contract -> Card -> Card -> CardRelation
 relateCards = undefined
 
 -- TASK:
--- Given a contract and two cards, return the winning card
--- Assume the first card is played first
+-- Return the winning card. Assume the first card was played first.
+
 fight :: Contract -> Card -> Card -> Card
 fight = undefined
 
--- Data type for a trick (игра, разигравка, ръка, рунд), consisting of four cards
+-- TASK:
+-- Define a Trick containing four cards.
+
 data Trick
   deriving (Show)
 
 -- TASK:
--- Given a contract and a Trick, determine the winning card
--- Remember that the leftmost card was played first
+-- Determine the winning card in a Trick.
+-- The leftmost card was played first.
+
 winner :: Contract -> Trick -> Card
 winner = undefined
 
 -- TASK:
--- Check if a Trick could have been played according to the rules of Belote
+-- Check whether a Trick could have been played under the rules of Belote.
+
 isValid :: Contract -> Trick -> Bool
 isValid = undefined
