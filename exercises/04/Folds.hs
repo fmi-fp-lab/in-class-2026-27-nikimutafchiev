@@ -278,12 +278,15 @@ partitionfoldr predicate = foldr ([], []) (\x (l1, l2) -> if predicate x then (x
 -- >>> validateList [Nothing, Just 6, Just 9]
 -- Nothing
 -- >>> validateList [Just 42, Nothing, Just 9]
--- Nothin
+-- Nothing
 -- >>> validateList [Just 42, Just 6, Nothing]
 -- Nothing
 
 validateList :: [Maybe a] -> Maybe [a]
-validateList = undefined
+validateList l = foldr (Just []) accumulate l
+  where
+    accumulate (Just x) (Just acc) = Just (x : acc)
+    accumulate _ _ = Nothing
 
 -- TASK:
 -- Look at the recursor for nats - foldNat. In there we replaced {Nat}'s constructors with "things".
